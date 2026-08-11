@@ -104,7 +104,7 @@ A standard PGL specification consists of four primary constructs:
 
 Below is a complete PGL pattern for a Dot Product (`dot`) in C:
 
-```
+```c
 // Operational macro definitions with syntactic variations
 def inc(x)     : ++x | x++ | x += 1 | x = x + 1 | x = 1 + x
 def init(x)    : x = 0
@@ -148,22 +148,22 @@ From this single 25-line `.pgl` file, PGC automatically expands and generates **
 - [A Pattern Generation Language for MLIR Compiler Matching and Rewriting](https://dl.acm.org/doi/10.1145/3777905):
     ```
     @article{10.1145/3777905,
-    author = {Attrot, Wesley and Zago, Luciano and Pereira, Marcio and Couto, Vin{\'i}cius and Yviquel, Herv{\'e} and Araujo, Guido},
-    title = {A Pattern Generation Language for MLIR Compiler Matching and Rewriting},
-    year = {2026},
-    issue_date = {March 2026},
-    publisher = {Association for Computing Machinery},
-    address = {New York, NY, USA},
-    volume = {23},
-    number = {1},
-    issn = {1544-3566},
-    url = {https://doi.org/10.1145/3777905},
-    doi = {10.1145/3777905},
-    journal = {ACM Trans. Archit. Code Optim.},
-    month = mar,
-    articleno = {6},
-    numpages = {25},
-    keywords = {Pattern description, pattern generation, idiom recognition, hardware accelerators}
+        author = {Attrot, Wesley and Zago, Luciano and Pereira, Marcio and Couto, Vin{\'i}cius and Yviquel, Herv{\'e} and Araujo, Guido},
+        title = {A Pattern Generation Language for MLIR Compiler Matching and Rewriting},
+        year = {2026},
+        issue_date = {March 2026},
+        publisher = {Association for Computing Machinery},
+        address = {New York, NY, USA},
+        volume = {23},
+        number = {1},
+        issn = {1544-3566},
+        url = {https://doi.org/10.1145/3777905},
+        doi = {10.1145/3777905},
+        journal = {ACM Trans. Archit. Code Optim.},
+        month = mar,
+        articleno = {6},
+        numpages = {25},
+        keywords = {Pattern description, pattern generation, idiom recognition, hardware accelerators}
     }
     ```
 
