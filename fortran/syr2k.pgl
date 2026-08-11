@@ -1,0 +1,24 @@
+import "fortran.def"
+
+decl syr2k($int(ni,nj),$real(alpha,a[nj][nj],b[nj][ni],c[ni][ni])){
+  $for(i,ni)
+    $for(j,i)
+      c(j, i)=$mul(c(j, i),beta)
+    end do
+    $for(j,i)
+      $for(k,nj)
+        $macc(c(j, i),alpha,$mul(a(k,i),b(k,j)))
+        $macc(c(j, i),alpha,$mul(b(k,i),a(k,j)))
+      end do
+    end do
+  end do
+}={
+$if($real==real){
+  external :: ssyr2k
+  call ssyr2k('U','T',ni,nj,alpha,a,nj,b,nj,beta,c,ni)
+}
+$else{
+  external :: dsyr2k
+  call dsyr2k('U','T',ni,nj,alpha,a,nj,b,nj,beta,c,ni)
+}
+}

@@ -1,0 +1,21 @@
+import "fortran.def"
+
+decl gemm($int(m,n,k),$real(alpha,A[m][k],B[k][n],beta,C[m][n])) {
+  $for(nn,n)
+    $for(mm,m)
+      $macc($matrix(c, mm, nn), $matrix(c, mm, nn), beta)
+      $for(i,k)
+        $acc($matrix(c, mm, nn), $mul($mul(alpha,$matrix(b, i, nn)),$matrix(a, mm, i)))
+      end do
+    end do
+  end do
+} = {
+$if($real==real){
+  external :: sgemm
+  call sgemm('N', 'N', m, n, k, alpha, A, m, B, k, beta, C, m)
+}
+$else{
+  external :: dgemm
+  call dgemm('N', 'N', m, n, k, alpha, A, m, B, k, beta, C, m)
+}
+}

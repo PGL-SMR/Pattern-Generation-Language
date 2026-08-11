@@ -1,0 +1,29 @@
+type int : int
+type real : float | double
+type integral : int | float | double
+
+def inc(x) : ++x | x++ | x += 1 | x = x + 1
+def init(x) : x = 0
+def comp(a, b) : a < b
+def for(x, y) : for ($init(x); $comp(x, y); $inc(x))
+def acc(a, b) : a += b | a = a + b
+def mul(a, b) : (a) * (b) | (b) * (a)
+def vector(x, i) : x[i]
+def vector_inc(x, i, inc) : x[$mul(inc, i)]
+def matrix(x, a, b) : float x[a][b]
+
+decl dot($int(n), $real(*x, *y, out)) {
+  $init(out);
+  int i;
+  $for(i,n) {
+    $acc(out, $mul($vector(x, i), $vector(y, i)));
+  }
+} = {
+#include <cblas.h>
+$if($real == float){
+  out = cblas_sdot(n, x, 1, y, 1);
+}
+$elif($real == double) {
+  out = cblas_ddot(n, x, 1, y, 1);
+}
+}

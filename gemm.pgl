@@ -1,0 +1,36 @@
+def inc(x): ++x | x++ | x += 1 | x = x + 1
+def init(x): x = 0
+def comp(a, b): a < b
+def for(x, y): for ($init(x); $comp(x, y); $inc(x))
+def acc(a, b): a += b | a = a + b
+def mul(a, b): a * b | b * a
+def macc(a, b, c): $acc(a,$mul(b,c))
+def sum(a, b): a + b | b + a
+def vector(x, i): x[i]
+def matrix(A,b,c,d): $vector(A,$sum(b, $mul(c, d)))
+type int: int
+type real: float | double
+type all: int | float | double
+
+decl gemm($int(m,n,k,lda,ldb,ldc),$real(alpha,*A,*B,beta,*C)) {
+  int mm, nn, i;
+  $for(mm,m) {
+    $for(nn,n) {
+      $real $init(c);
+      $for(i,k) {
+        $real a = $vector(A,$sum(mm, $mul(i, lda)));
+        $real b = $vector(B,$sum(nn, $mul(i, ldb)));
+        $acc(c, $mul(a, b));
+      }
+    $matrix(C,mm,nn,ldc) = $sum($mul($matrix(C,mm,nn,ldc),beta),$mul(alpha,c));
+    }
+  }
+} = {
+#include <cblas.h>
+$if($real == float) {
+  cblas_sgemm(m, n, k, alpha, A, lda, B, ldb, beta, C, ldc);
+}
+$elif($real == double) {
+  cblas_dgemm(m, n, k, alpha, A, lda, B, ldb, beta, C, ldc);
+}
+}

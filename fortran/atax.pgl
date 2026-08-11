@@ -1,0 +1,24 @@
+import "fortran.def"
+
+decl atax($int(nx,ny),$real(a[ny][nx],x[ny],y[ny],tmp[nx])){
+  $for(i,nx)
+    tmp(i) = 0.0
+    $for(j,ny)
+      $macc(tmp(i),a(j,i),x(j))
+    end do
+    $for(j,ny)
+      $macc(y(j),a(j,i),tmp(i))
+    end do
+  end do
+}={
+$if($real==real){
+  external :: sgemv
+  call sgemv('T', nx, ny, 1.0D0, a, ny, x, 1, 0.0D0, tmp, 1)
+  call sgemv('N', ny, nx, 1.0D0, a, ny, tmp, 1, 0.0D0, y, 1)
+}
+$else{
+  external :: dgemv
+  call dgemv('T', nx, ny, 1.0D0, a, ny, x, 1, 0.0D0, tmp, 1)
+  call dgemv('N', ny, nx, 1.0D0, a, ny, tmp, 1, 0.0D0, y, 1)
+}
+}

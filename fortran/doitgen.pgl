@@ -1,0 +1,19 @@
+import "fortran.def"
+
+decl doitgen($int(nr,nq,np,r,q),$real(a[np][nq][nr],sumA[np][nq][nr],cFour[np][np])){
+  $for(p,np)
+    sumA(p,q,r) = 0.0
+    $for(s,np)
+      $macc(sumA(p,q,r),a(s,q,r),cFour(p,s))
+    end do
+  end do
+}={
+$if($real==real){
+  external :: sgemv
+  call sgemv('N',np,np,1.0,cFour,np,a(:,q,r),1,0,sumA(:,q,r),1)
+}
+$else{
+  external :: dgemv
+  call dgemv('N',np,np,1.0,cFour,np,a(:,q,r),1,0,sumA(:,q,r),1)
+}
+}

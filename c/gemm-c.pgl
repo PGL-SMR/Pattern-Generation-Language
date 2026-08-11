@@ -1,0 +1,99 @@
+type int : unsigned int | int | unsigned long | long
+type real : float | double
+
+def inc(x) : ++x
+def init(x) : x = 0
+def comp(a, b) : a < b
+def for(x, y) : for ($init(x); $comp(x, y); $inc(x))
+def acc(a, b) : a += b | a = b + a
+def mul(a, b) : (a) * (b) | (b) * (a)
+def mul3(a, b, c): (a) * mul(b,c) | (b) * mul(a,c) | (c) * mul(b,a)
+def macc(a, b, c): $acc(a,$mul(b,c))
+def sum(a, b) : a + b | b + a
+def vector(x, i) : x[i]
+def matrix(A,b,c,d) : $vector(A,$sum(b, $mul(c, d)))
+
+decl gemm1($int(m,n,k,lda,ldb,ldc),$real(alpha,*A,*B,beta,*C)) {
+  int mm, nn, i;
+  $for(mm,m) {
+    $for(nn,n) {
+      $real $init(c);
+      $for(i,k) {
+        $real a = $matrix(A,mm,i,lda);
+        $real b = $matrix(B,nn,i,ldb);
+        $acc(c, $mul(a, b));
+      }
+    $matrix(C,mm,nn,ldc) = $sum($mul($matrix(C,mm,nn,ldc),beta),$mul(alpha,c));
+    }
+  }
+} = {
+#include <stdio.h>
+$if($real == float){
+  printf("sgemm substituted\n");
+}
+$elif($real == double) {
+  printf("dgemm substituted\n");
+}
+}
+
+decl gemm2($int(m,n,k,lda,ldb,ldc),$real(alpha,*A,*B,beta,*C)) {
+  int mm, nn, i;
+  $for(mm,m) {
+    $for(nn,n) {
+      $real $init(c);
+      $for(i,k) {
+        $acc(c,$mul3($matrix(A,i,mm,lda),alpha,$matrix(B,i,nn,ldb)));
+      }
+    $acc($matrix(C,nn,mm,ldc),c);
+    }
+  }
+} = {
+#include <stdio.h>
+$if($real == float){
+  printf("sgemm substituted\n");
+}
+$elif($real == double) {
+  printf("dgemm substituted\n");
+}
+}
+
+decl gemm3($int(m,n,k,lda,ldb,ldc),$real(alpha,*A,*B,beta,*C)) {
+  int mm, nn, i;
+  $for(mm,m) {
+    $for(nn,n) {
+      $real $init(c);
+      $for(i,k) {
+        $acc(c,$mul3($matrix(A,mm,i,lda),alpha,$matrix(B,i,nn,ldb)));
+      }
+    $acc($matrix(C,nn,mm,ldc),c);
+    }
+  }
+} = {
+#include <stdio.h>
+$if($real == float){
+  printf("sgemm substituted\n");
+}
+$elif($real == double) {
+  printf("dgemm substituted\n");
+}
+}
+
+decl gemm4($int(m,n,k,lda,ldb,ldc),$real(alpha,*A,*B,*C)) {
+  int mm, nn, i;
+  $for(mm,m) {
+    $for(nn,n) {
+      $real a_alpha = $mul(alpha,$matrix(A,nn,mm,lda));
+      $for(i,k) {
+        $acc($matrix(C,i,mm,ldc), $mul(a_alpha, $matrix(B,i,nn,ldb)));
+      }
+    }
+  }
+} = {
+#include <stdio.h>
+$if($real == float){
+  printf("sgemm substituted\n");
+}
+$elif($real == double) {
+  printf("dgemm substituted\n");
+}
+}

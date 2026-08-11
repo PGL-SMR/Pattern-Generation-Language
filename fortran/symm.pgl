@@ -1,0 +1,23 @@
+import "fortran.def"
+
+decl symm($int(ni,nj),$real(acc,a[nj][nj],b[nj][ni],c[nj][ni])){
+  $for(i,ni)
+    $for(j,nj)
+      acc = 0.0
+        $for(k,j-2)
+          $macc(c(j,k),$mul(alpha,a(i,k)),b(j,i))
+          $macc(acc,b(j,k),a(i,k))
+        end do
+        c(j,i) = $sum($mul(beta,c(j,i)),$sum($mul(alpha,$mul(a(i,i),b(j,i))),$mul(alpha,acc)))
+    end do
+  end do
+}={
+$if($real==real){
+  external :: ssymm
+  call ssymm('L','L',nj,ni,alpha,a,nj,b,nj,beta,c,nj)
+}
+$else{
+  external :: dsymm
+  call dsymm('L','L',nj,ni,alpha,a,nj,b,nj,beta,c,nj)
+}
+}

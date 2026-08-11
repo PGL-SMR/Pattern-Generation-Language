@@ -1,0 +1,35 @@
+import "fortran.def"
+
+decl mvt1($int(n),$real(a[n][n],y[n],x[n])){
+  $for(i,n)
+    $for(j,n)
+      $macc(x(i),a(i,j),y(j))
+    end do
+  end do
+}={
+$if($real==real){
+  external :: sgemv
+  call sgemv('N',n,n,1.0D0,a,n,y,1,1.0D0,x,1)
+}
+$else{
+  external :: dgemv
+  call dgemv('N',n,n,1.0D0,a,n,y,1,1.0D0,x,1)
+}
+}
+
+decl mvt2($int(n),$real(a[n][n],y[n],x[n])){
+  $for(i,n)
+    $for(j,n)
+      $macc(x(i),a(j,i),y(j))
+    end do
+  end do
+}={
+$if($real==real){
+  external :: sgemv
+  call sgemv('N',n,n,1.0D0,a,n,y,1,1.0D0,x,1)
+}
+$else{
+  external :: dgemv
+  call dgemv('N',n,n,1.0D0,a,n,y,1,1.0D0,x,1)
+}
+}

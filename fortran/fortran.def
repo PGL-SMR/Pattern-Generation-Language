@@ -1,0 +1,14 @@
+def inc(x): ++x | x++ | x += 1 | x = x + 1
+def init(x): x = 1
+def comp(a, b): a < b
+def for(x, y): do $init(x), y
+def acc(a, b): a = a + b
+def mul(a, b): a * b | b * a
+def macc(a, b, c): $acc(a,$mul(b,c))
+def sum(a, b): a + b | b + a
+def vector(x, i): x(i)
+def matrix(x, i, j): x(i, j)
+
+type int: integer
+type real: real | double precision
+type all: integer | real | double precision

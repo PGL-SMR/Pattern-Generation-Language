@@ -1,0 +1,145 @@
+program ::= statements
+
+statements ::= statement_line
+            | statements statement_line
+
+statement_line ::= statement NEW_LINE
+                | empty NEW_LINE
+
+statement ::= import
+            | type_definition
+            | definition
+            | pattern_declaration
+
+import ::= "import" STRING
+
+type_definition ::= "type" ID ":" variation_list
+
+definition ::= DEF ID "(" parameters ")" ":" variation_list
+            | DEF ID "(" empty ")" ":" variation_list
+
+pattern_declaration ::= "decl" ID "(" declaration_type_expansion_list ")" brace_block "=" brace_block
+                     | "decl" ID "(" empty ")" brace_block "=" brace_block
+
+variation_list ::= variation
+                | variation_list OR variation
+
+parameters ::= parameter_list
+
+brace_block ::= "{" lines "}"
+             | "{" instructions "}"
+             | "{" empty "}"
+
+variation ::= instructions
+
+parameter_list ::= parameter_decl
+                | parameter_list "," parameter_decl
+
+parameter_decl ::= ID
+                | expansion
+
+expression ::= ID
+            | CODE
+            | "="
+            | "*"
+            | STRING
+
+expression_list ::= expression
+                 | expression_list expression
+
+expressions ::= expression_list
+
+expression_decl ::= expressions
+                 | expansion
+
+expression_parameters ::= expression_decl
+                       | expression_parameters "," expression_decl
+
+code ::= ID
+      | CODE
+      | "="
+      | ","
+      | "*"
+      | "["
+      | "]"
+      | STRING
+
+instruction ::= code
+             | expansion
+             | type_expansion
+             | brace_block
+             | paren_block
+             | operation
+             | include
+
+instruction_list ::= instruction
+                   | instruction_list instruction
+
+instructions ::= instruction_list
+
+instruction_line ::= instructions NEW_LINE
+                  | empty NEW_LINE
+
+lines ::= instruction_line
+        | lines instruction_line
+
+brace_block ::= "{" lines "}"
+             | "{" instructions "}"
+             | "{" empty "}"
+
+paren_block ::= "(" lines ")"
+             | "(" instructions ")"
+             | "(" empty ")"
+
+expansion ::= "$" ID "(" expression_parameters ")"
+
+type_expansion ::= "$" ID
+
+declaration_type_expansion_list ::= declaration_type_expansion
+        | declaration_type_expansion_list "," declaration_type_expansion
+
+declaration_type_expansion ::= "$" ID "(" pointer_array_list ")"
+        | "$" ID "(" empty ")"
+
+pointers ::= empty
+        | pointers "*"
+        | "*"
+
+array ::= "[" ID "]"
+       | "[" CODE "]"
+
+arrays ::= empty
+        | arrays array
+        | array
+
+pointer_array ::= pointers ID arrays
+
+pointer_array_list ::= pointer_array
+                    | pointer_array_list "," pointer_array
+
+operation ::= conditional_operation
+
+operator ::= "=="
+          | "!="
+
+condition ::= type_expansion operator STRING
+           | type_expansion operator ID
+           | STRING operator type_expansion
+           | ID operator type_expansion
+
+else ::= "else" brace_block
+
+elif_else_opt ::= elif_list else
+       | elif_list
+       | else
+       | empty
+
+conditional_operation ::= "if" "(" condition ")" brace_block elif_else_opt
+
+elif ::= "elif" "(" condition ")" brace_block
+
+elif_list ::= elif
+           | elif_list elif
+
+empty ::= 
+

@@ -1,0 +1,22 @@
+import "fortran.def"
+
+decl bicg($int(nx,ny),$real(a[ny][nx],r[nx],q[nx],p[ny],s[ny])){
+  $for(i,nx)
+    q(i) = 0.0
+    $for(j,ny)
+      $macc(s(j),r(i),a(j, i))
+      $macc(q(i),a(j, i),p(j))
+    end do
+  end do
+}={
+$if($real==real){
+  external :: sgemv
+  call sgemv('N',ny,nx,1.0D0,a,ny,r,1,0.0D0,s,1)
+  call sgemv('T',nx,ny,1.0D0,a,ny,p,1,0.0D0,q,1)
+}
+$else{
+  external :: dgemv
+  call dgemv('N',ny,nx,1.0D0,a,ny,r,1,0.0D0,s,1)
+  call dgemv('T',nx,ny,1.0D0,a,ny,p,1,0.0D0,q,1)
+}
+}

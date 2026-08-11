@@ -1,0 +1,41 @@
+type int : unsigned int | int | unsigned long | long
+type real : float | double
+
+def inc(x) : ++x
+def init(x) : x = 0
+def comp(a, b) : a < b
+def for(x, y) : for ($init(x); $comp(x, y); $inc(x))
+def acc(a, b) : a += b | a = b + a
+def mul(a, b) : (a) * (b) | (b) * (a)
+def vector(x, i) : x[i]
+def vector_inc(x, i, inc) : x[$mul(inc, i)]
+
+decl copy($int(n), $real(*x, *y)) {
+  $int i;
+  $for(i,n) {
+    $vector(y, i) = $vector(x, i);
+  }
+} = {
+#include <stdio.h>
+$if($real == float){
+  printf("scopy substituted\n");
+}
+$elif($real == double) {
+  printf("dcopy substituted\n");
+}
+}
+
+decl copy_inc($int(n, incx, incy), $real(*x, *y)) {
+  $int i;
+  $for(i,n) {
+    $vector_inc(y, i, incy) = $vector_inc(x, i, incx);
+  }
+} = {
+#include <stdio.h>
+$if($real == float){
+  printf("scopy substituted\n");
+}
+$elif($real == double) {
+  printf("dcopy substituted\n");
+}
+}

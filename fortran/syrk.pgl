@@ -1,0 +1,20 @@
+import "fortran.def"
+
+decl syrk($int(ni,nj),$real(alpha,a[ni][ni],c[nj][ni])){
+  $for(i,ni)
+    $for(j,ni)
+      $for(k,nj)
+        $macc(c(j,i),alpha,$mul(a(k,i),a(k,j)))
+      end do
+    end do
+  end do
+}={
+$if($real==real){
+  external :: sgemm
+  call sgemm('N','N',ni,ni,ni,alpha,a,ni,transpose(a),ni,1.0D0,c,nj)
+}
+$else{
+  external :: dgemm
+  call dgemm('N','N',ni,ni,ni,alpha,a,ni,transpose(a),ni,1.0D0,c,nj)
+}
+}

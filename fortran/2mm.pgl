@@ -1,0 +1,41 @@
+import "fortran.def"
+
+decl p2mm1($int(ni,nj,nk),$real(alpha,a[nk][ni],b[nj][nk],tmp[nj][ni])){
+  $for(i,ni)
+    $for(j,nj)
+      tmp(j,i) = 0.0
+      $for(k,nk)
+        $macc(tmp(j,i),alpha,$mul(a(k,i),b(j,k)))
+      end do
+    end do
+  end do
+}={
+  $if($real==real){
+    external :: sgemm
+    call sgemm('N', 'N', nj, ni, nk, alpha, b, nj, a, nk, 0.0D0, tmp, nj)
+  }
+  $else{
+    external :: dgemm
+    call dgemm('N', 'N', nj, ni, nk, alpha, b, nj, a, nk, 0.0D0, tmp, nj)
+  }
+}
+
+decl p2mm2($int(ni,nj,nl),$real(beta,c[nl][nj],d[nl][ni],tmp[nj][ni])){
+  $for(i,ni)
+    $for(j,nl)
+      d(j,i)=$mul(d(j,i),beta)
+      $for(k,nj)
+        $macc(d(j,i),tmp(k,i),c(j,k))
+      end do
+    end do
+  end do
+}={
+  $if($real==real){
+    external :: sgemm
+    call sgemm('N', 'N', nl, ni, nj, 1.0D0, c, nl, tmp, nj, beta, d, nl)
+  }
+  $else{
+    external :: dgemm
+    call dgemm('N', 'N', nl, ni, nj, 1.0D0, c, nl, tmp, nj, beta, d, nl)
+  }
+}

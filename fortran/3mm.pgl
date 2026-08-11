@@ -1,0 +1,21 @@
+import "fortran.def"
+
+decl p3mm($int(ni,nj,nk),$real(a[nk][ni],b[nj][nk],e[nj][ni])){
+    $for(i,ni)
+    $for(j,nj)
+      e(j,i) = 0.0
+      $for(k,nk)
+        $macc(e(j,i),a(k,i),b(j,k))
+      end do
+    end do
+  end do
+}={
+  $if($real==real){
+    external :: sgemm
+    call sgemm('N', 'N', nj, ni, nk, 1.0D0, b, nk, a, nj, 0.0D0, e, nj)
+  }
+  $else{
+    external :: dgemm
+    call dgemm('N', 'N', nj, ni, nk, 1.0D0, b, nk, a, nj, 0.0D0, e, nj)
+  }
+}
