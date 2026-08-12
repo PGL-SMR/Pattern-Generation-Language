@@ -1,0 +1,50 @@
+type int : unsigned int | int | unsigned long | long
+type real : float | double
+
+def inc(x): ++x
+def init(x): x = 0
+def comp(a, b): a < b
+def for(x, y): for ($init(x); $comp(x, y); $inc(x))
+def acc(a, b): a += b | a = b + a
+def mul(a, b): a * b | b * a
+def macc(a, b, c): $acc(a,$mul(b,c))
+def sum(a, b): a + b | b + a
+def vector(x, i): x[i]
+def matrix(A,b,c,d): $vector(A,$sum(b, $mul(c, d)))
+
+decl gemv($int(n),$real(*A,*X,*Y)) {
+  $int i,j;
+  $real y;
+  $for(i,n) {
+    y = $vector(Y,i);
+    $for(j,n) {
+      $acc(y,$mul($matrix(A,j,i,n),$vector(X,j)));
+    }
+    $vector(Y,i) = y;
+  }
+} = {
+#include <stdio.h>
+$if($real == float){
+  printf("sgemv substituted\n");
+}
+$elif($real == double) {
+  printf("dgemv substituted\n");
+}
+}
+
+decl gemv2($int(n),$real(*A,*X,*Y)) {
+  $int i,j;
+  $for(i,n) {
+    $for(j,n) {
+      $acc($vector(Y,i),$mul($matrix(A,j,i,n),$vector(X,j)));
+    }
+  }
+} = {
+#include <stdio.h>
+$if($real == float){
+  printf("sgemv substituted\n");
+}
+$elif($real == double) {
+  printf("dgemv substituted\n");
+}
+}

@@ -1,0 +1,43 @@
+type int : unsigned int | int | unsigned long | long
+type real : float | double
+
+def inc(x) : ++x
+def init(x) : x = 0
+def comp(a, b) : a < b
+def for(x, y) : for ($init(x); $comp(x, y); $inc(x))
+def acc(a, b) : a += b | a = b + a
+def mul(a, b) : (a) * (b) | (b) * (a)
+def vector(x, i) : x[i]
+def vector_inc(x, i, inc) : x[$mul(inc, i)]
+
+decl dot($int(n), $real(*x, *y, out)) {
+  $init(out);
+  $int i;
+  $for(i,n) {
+    $acc(out, $mul($vector(x, i), $vector(y, i)));
+  }
+} = {
+#include <stdio.h>
+$if($real == float){
+  printf("sdot substituted\n");
+}
+$elif($real == double) {
+  printf("ddot substituted\n");
+}
+}
+
+decl dot_inc($int(n, incx, incy), $real(*x, *y, out)) {
+  $init(out);
+  $int i;
+  $for(i,n) {
+    $acc(out, $mul($vector_inc(x, i, incx), $vector_inc(y, i, incy)));
+  }
+} = {
+#include <stdio.h>
+$if($real == float){
+  printf("sdot substituted\n");
+}
+$elif($real == double) {
+  printf("ddot substituted\n");
+}
+}
